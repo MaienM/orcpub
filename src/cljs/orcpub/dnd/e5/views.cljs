@@ -320,7 +320,7 @@
   (if (= "Enter" (.-key e)) (dispatch [:set-search-text @(subscribe [:search-text])])))
 
 (defn set-search-text [e]
-  (dispatch [:set-search-text (event-value e)]))
+  (dispatch-sync [:set-search-text (event-value e)]))
 
 (defn set-search-text-empty [e]
   (dispatch [:set-search-text ""]))

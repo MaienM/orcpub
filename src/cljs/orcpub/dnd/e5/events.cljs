@@ -1865,13 +1865,17 @@
         dice-result (dice/dice-roll-text search-text)
         kw (if search-text (common/name-to-kw search-text))
         name-result (name-result search-text)
+        spell-map @(subscribe [::spells/spells-map])
+        sorted-spells @(subscribe [::char5e/sorted-spells])
+        monster-map @(subscribe [::monsters/monster-map])
+        sorted-monsters @(subscribe [::monsters/sorted-monsters])
         top-result (cond
                      dice-result {:type :dice-roll
                                   :result dice-result}
-                     (spells/spell-map kw) {:type :spell
-                                            :result (spells/spell-map kw)}
-                     (monsters/monster-map kw) {:type :monster
-                                                :result (monsters/monster-map kw)}
+                     (spell-map kw) {:type :spell
+                                     :result (spell-map kw)}
+                     (monster-map kw) {:type :monster
+                                       :result (monster-map kw)}
                      (mi/magic-item-map kw) {:type :magic-item
                                              :result (mi/magic-item-map kw)}
                      (= "tavern name" search-text) {:type :tavern-name
@@ -1882,11 +1886,12 @@
         top-spells (if (>= (count text) 3)
                      (sequence
                       filter-xform
-                      spells/spells))
+                      sorted-spells))
         top-monsters (if (>= (count text) 3)
                        (sequence
                         filter-xform
-                        monsters/monsters))]
+                        sorted-monsters))
+        ]
     (cond-> {}
       top-result (assoc :top-result top-result)
       (seq top-spells) (update :results conj {:type :spell
