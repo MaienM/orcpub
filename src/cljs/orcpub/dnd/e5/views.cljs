@@ -1128,9 +1128,19 @@
          (if (zero? level)
            " cantrip"))]])
 
-(defn spell-component [{:keys [name level school casting-time ritual range duration components description summary page source] :as spell} include-name? & [subheader-size]]
+(defn source-line [{:keys [source page option-pack] :as thing}]
+  (str "From " (or
+                (if source (str
+                             source
+                             (if page (str " page " page))))
+                option-pack
+                "SRD"))
+  )
+
+(defn spell-component [{:keys [name level school casting-time ritual range duration components description summary page source option-pack] :as spell} include-name? & [subheader-size]]
   [:div.m-l-10.l-h-19
    [spell-summary name level school ritual include-name? subheader-size]
+   (source-line spell)
    (spell-field "Casting Time" casting-time)
    (spell-field "Range" range)
    (spell-field "Duration" duration)
@@ -1216,6 +1226,7 @@
      (if (not @(subscribe [:mobile?])) {:style two-columns-style})
      [:span.f-s-24.f-w-b name]
      [:div.f-s-18.i.f-w-b (monsters/monster-subheader size type subtypes alignment)]
+     (source-line monster)
      (spell-field "Armor Class" (str armor-class (if armor-notes (str " (" armor-notes ")"))))
      (let [{:keys [mean die-count die modifier]} hit-points]
        (spell-field "Hit Points" (str die-count
